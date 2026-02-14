@@ -1,0 +1,20 @@
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand">
+            <span class="brand-icon">📋</span>
+            <span class="brand-text">ManageTask</span>
+        </a>
+        <div class="navbar-menu">
+            <% if (typeof username !== 'undefined' && username) { %>
+                <span class="navbar-user">👤 <%= username %></span>
+                <a href="/projects" class="nav-link">Projects</a>
+                <form action="/logout" method="POST" class="nav-logout-form">
+                    <button type="submit" class="btn btn-sm">Logout</button>
+                </form>
+            <% } else { %>
+                <!-- <a href="/login" class="nav-link">Login</a>
+                <a href="/register" class="nav-link">Register</a> -->
+            <% } %>
+        </div>
+    </div>
+</nav>

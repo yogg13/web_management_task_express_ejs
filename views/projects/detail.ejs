@@ -1,0 +1,123 @@
+<%- include('../partials/header') %>
+
+<div style="margin: 0 40px">
+    <div class="page-header">
+        <div>
+            <a href="/projects" class="breadcrumb">← Back to Projects</a>
+            <h1><%= project.name %></h1>
+            <span class="badge badge-<%= project.status %>"><%= project.status %></span>
+        </div>
+        <div class="header-actions">
+            <a href="/projects/<%= project.id %>/tasks/create" class="btn btn-primary">+ Add Task</a>
+            <a href="/projects/<%= project.id %>/edit" class="btn btn-secondary">Edit Project</a>
+            <form action="/projects/<%= project.id %>?_method=DELETE" method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this project? All tasks will also be deleted.')">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <% if (project.description) { %>
+        <p class="project-full-description"><%= project.description %></p>
+    <% } %>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number"><%= project.tasks.length %></div>
+            <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= project.tasks.filter(t => t.status === 'todo').length %></div>
+            <div class="stat-label">To Do</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= project.tasks.filter(t => t.status === 'in_progress').length %></div>
+            <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= project.tasks.filter(t => t.status === 'done').length %></div>
+            <div class="stat-label">Done</div>
+        </div>
+    </div>
+
+    <% if (project.tasks.length === 0) { %>
+    <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h2>No tasks yet</h2>
+        <p>Add your first task to this project!</p>
+        <a href="/projects/<%= project.id %>/tasks/create" class="btn btn-primary">Add Task</a>
+    </div>
+    <% } else { %>
+    <div class="task-table-container">
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assignee</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% project.tasks.forEach(task => { %>
+                <tr>
+                    <td>
+                        <strong><%= task.title %></strong>
+                        <% if (task.description) { %>
+                            <br><small class="text-muted"><%= task.description.substring(0, 60) %><%= task.description.length > 60 ? '...' : '' %></small>
+                        <% } %>
+                    </td>
+                    <td>
+                        <select class="status-select status-<%= task.status %>" data-task-id="<%= task.id %>" onchange=`updateTaskStatus(<%= task.id %>, this.value)`>
+                            <option value="todo" <%= task.status === 'todo' ? 'selected' : '' %> >📋 To Do</option>
+                            <option value="in_progress" <%= task.status === 'in_progress' ? 'selected' : '' %> >🔄 In Progress</option>
+                            <option value="done" <%= task.status === 'done' ? 'selected' : '' %> >✅ Done</option>
+                        </select>
+                    </td>
+                    <td><span class="badge badge-priority-<%= task.priority %>"><%= task.priority %></span></td>
+                    <td><%= task.assignee ? task.assignee.username : 'Unassigned' %></td>
+                    <td>
+                        <% if (task.dueDate) { %>
+                            <%= new Date(task.dueDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                        <% } else { %>
+                            <span class="text-muted">No due date</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="/tasks/<%= task.id %>/edit" class="btn btn-sm btn-secondary">Edit</a>
+                            <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" class="inline-form" onsubmit="return confirm('Delete this task?')">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<% } %>
+
+<script>
+async function updateTaskStatus(taskId, status) {
+    try {
+        var url = '/tasks/' + taskId + '/status';
+        var res = await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: status })
+        });
+        if (res.ok) {
+            var select = document.querySelector('[data-task-id="' + taskId + '"]');
+            select.className = 'status-select status-' + status;
+        }
+    } catch (err) {
+        console.error('Failed to update status:', err);
+    }
+}
+</script>
+
+<%- include('../partials/footer') %>

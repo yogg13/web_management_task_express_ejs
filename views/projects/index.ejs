@@ -1,0 +1,62 @@
+<%- include('../partials/header') %>
+
+<div style="margin: 0 40px;">
+
+    <div class="page-header">
+        <div>
+            <h1>My Projects</h1>
+            <p class="text-muted">Manage all your projects in one place</p>
+        </div>
+        <a href="/projects/create" class="btn btn-primary">+ New Project</a>
+    </div>
+    
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number"><%= projects.length %></div>
+            <div class="stat-label">Total Projects</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= projects.filter(p => p.status === 'active').length %></div>
+            <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= projects.filter(p => p.status === 'completed').length %></div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><%= projects.reduce((sum, p) => sum + p.tasks.length, 0) %></div>
+            <div class="stat-label">Total Tasks</div>
+        </div>
+    </div>
+    
+    <% if (projects.length === 0) { %>
+    <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <h2>No projects yet</h2>
+        <p>Create your first project to get started!</p>
+        <a href="/projects/create" class="btn btn-primary">Create Project</a>
+    </div>
+    <% } else { %>
+    <div class="project-grid">
+        <% projects.forEach(project => { %>
+        <div class="project-card">
+            <div class="project-card-header">
+                <h3><a href="/projects/<%= project.id %>"><%= project.name %></a></h3>
+                <span class="badge badge-<%= project.status %>"><%= project.status %></span>
+            </div>
+            <p class="project-description"><%= project.description ? project.description.substring(0, 100) + (project.description.length > 100 ? '...' : '') : 'No description' %></p>
+            <div class="project-card-footer">
+                <span class="task-count">📋 <%= project.tasks.length %> task<%= project.tasks.length !== 1 ? 's' : '' %></span>
+                <div class="project-actions">
+                    <a href="/projects/<%= project.id %>" class="btn btn-sm btn-outline">View</a>
+                    <a href="/projects/<%= project.id %>/edit" class="btn btn-sm btn-secondary">Edit</a>
+                </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+    <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>
