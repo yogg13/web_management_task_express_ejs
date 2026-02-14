@@ -1,0 +1,26 @@
+{
+  "name": "backend_express_ejs_crud",
+  "version": "1.0.0",
+  "description": "Create simple CRUD Web App with EJS and Express JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Muhammad Yoga Q. E. P.",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "pg": "^8.18.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
